@@ -1,0 +1,1095 @@
+<?php
+
+
+session_start();
+
+if(isset($_SESSION["id"])){
+// Connect to the database using PDO
+$host = 'localhost';
+$dbname = 'mandhagr_websystems_10';
+$username = 'mandhagr_websystems_10';
+$password = 'websystems_10';
+
+$dsn = "mysql:host=$host;dbname=$dbname";
+$options = [
+    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    PDO::ATTR_EMULATE_PREPARES => false,
+];
+try {
+    $connection = new PDO($dsn, $username, $password, $options);
+} catch (\PDOException $e) {
+    throw new \PDOException($e->getMessage(), (int)$e->getCode());
+}
+
+
+$conn = new mysqli($host, $username, $password, $dbname);
+
+if ($conn->connect_error) {
+  die("Connection failed: " . $conn->connect_error);
+}
+
+
+
+$sql = "SELECT * FROM accounts
+WHERE id = '{$_SESSION["id"]}'";
+
+$result = $conn->query($sql);
+
+$u = $result->fetch_assoc();
+//retrieving policy number from new clients
+$sql1 = "SELECT * FROM clients";
+$stmt1 = $connection->prepare($sql1);
+$stmt1->execute();
+$result1 = $stmt1->fetchAll(PDO::FETCH_ASSOC);
+
+$sql11 = "SELECT Distinct group_name FROM groups";
+$stmt11 = $connection->prepare($sql11); // Fix: Use $sql11 instead of $sql1
+$stmt11->execute();
+$result11 = $stmt11->fetchAll(PDO::FETCH_ASSOC);
+  
+}else{
+  header("Location: ../samples/login-2.php");
+}
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+  <!-- Required meta tags --> 
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Funeral demo | Premium</title>
+  <!-- plugins:css -->
+  <link rel="stylesheet" href="../../vendors/iconfonts/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="../../vendors/css/vendor.bundle.base.css">
+  <link rel="stylesheet" href="../../vendors/css/vendor.bundle.addons.css">
+  <!-- endinject -->
+  <!-- inject:css -->
+  <link rel="stylesheet" href="../../css/style.css">
+  <!-- endinject -->
+  <link rel="shortcut icon" href="../../images/favicon.png" />
+</head>
+
+<body>
+  <div class="container-scroller">
+    <!-- partial:../../partials/_navbar.html -->
+    <nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row default-layout-navbar">
+      <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
+        <!-- <a class="navbar-brand brand-logo" href="../../index-2.html"><img src="../../images/logo.svg" alt="logo"/></a>
+        <a class="navbar-brand brand-logo-mini" href="../../index-2.html"><img src="../../images/logo-mini.svg" alt="logo"/></a> -->
+      </div>
+      <div class="navbar-menu-wrapper d-flex align-items-stretch">
+        <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
+          <span class="fas fa-bars"></span>
+        </button>
+        <ul class="navbar-nav">
+          <li class="nav-item nav-search d-none d-md-flex">
+            <div class="nav-link">
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <span class="input-group-text">
+                    <i class="fas fa-search"></i>
+                  </span>
+                </div>
+                <input type="text" class="form-control" placeholder="Search" aria-label="Search">
+              </div>
+            </div>
+          </li>
+        </ul>
+        <ul class="navbar-nav navbar-nav-right">
+          <li class="nav-item dropdown">
+            <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list">
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item preview-item">
+                <div class="preview-item-content">
+                  <h6 class="preview-subject font-weight-medium">Application Error</h6>
+                  <p class="font-weight-light small-text">
+                    Just now
+                  </p>
+                </div>
+              </a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item preview-item">
+                <div class="preview-thumbnail">
+                  <div class="preview-icon bg-warning">
+                    <i class="fas fa-wrench mx-0"></i>
+                  </div>
+                </div>
+                <div class="preview-item-content">
+                  <h6 class="preview-subject font-weight-medium">Settings</h6>
+                  <p class="font-weight-light small-text">
+                    Private message
+                  </p>
+                </div>
+              </a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item preview-item">
+                <div class="preview-thumbnail">
+                  <div class="preview-icon bg-info">
+                    <i class="far fa-envelope mx-0"></i>
+                  </div>
+                </div>
+                <div class="preview-item-content">
+                  <h6 class="preview-subject font-weight-medium">New user registration</h6>
+                  <p class="font-weight-light small-text">
+                    2 days ago
+                  </p>
+                </div>
+              </a>
+            </div>
+          </li>
+          <li class="nav-item nav-profile dropdown">
+            <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" id="profileDropdown">
+              <img src="../../images/faces/face5.jpg" alt="profile"/>
+            </a>
+            <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">
+              <a class="dropdown-item">
+                <i class="fas fa-cog text-primary"></i>
+                Settings
+              </a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" class="nav-link" href="../samples/login-2.php">
+                <i class="fas fa-power-off text-primary"></i>
+                Logout
+              </a>
+            </div>
+          </li>
+          <li class="nav-item nav-settings d-none d-lg-block">
+            <a class="nav-link" href="#">
+              <i class="fas fa-ellipsis-h"></i>
+            </a>
+          </li>
+        </ul>
+        <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-toggle="offcanvas">
+          <span class="fas fa-bars"></span>
+        </button>
+      </div>
+    </nav>
+    <!-- partial -->
+    <div class="container-fluid page-body-wrapper">
+      <!-- partial:../../partials/_settings-panel.html -->
+      <div class="theme-setting-wrapper">
+        <div id="settings-trigger"><i class="fas fa-fill-drip"></i></div>
+        <div id="theme-settings" class="settings-panel">
+          <i class="settings-close fa fa-times"></i>
+          <p class="settings-heading">SIDEBAR SKINS</p>
+          <div class="sidebar-bg-options selected" id="sidebar-light-theme"><div class="img-ss rounded-circle bg-light border mr-3"></div>Light</div>
+          <div class="sidebar-bg-options" id="sidebar-dark-theme"><div class="img-ss rounded-circle bg-dark border mr-3"></div>Dark</div>
+          <p class="settings-heading mt-2">HEADER SKINS</p>
+          <div class="color-tiles mx-0 px-4">
+            <div class="tiles primary"></div>
+            <div class="tiles success"></div>
+            <div class="tiles warning"></div>
+            <div class="tiles danger"></div>
+            <div class="tiles info"></div>
+            <div class="tiles dark"></div>
+            <div class="tiles default"></div>
+          </div>
+        </div>
+      </div>
+      <div id="right-sidebar" class="settings-panel">
+        <i class="settings-close fa fa-times"></i>
+        <ul class="nav nav-tabs" id="setting-panel" role="tablist">
+          <li class="nav-item">
+            <a class="nav-link active" id="todo-tab" data-toggle="tab" href="#todo-section" role="tab" aria-controls="todo-section" aria-expanded="true">TO DO LIST</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="chats-tab" data-toggle="tab" href="#chats-section" role="tab" aria-controls="chats-section">CHATS</a>
+          </li>
+        </ul>
+        <div class="tab-content" id="setting-content">
+          <div class="tab-pane fade show active scroll-wrapper" id="todo-section" role="tabpanel" aria-labelledby="todo-section">
+            <div class="add-items d-flex px-3 mb-0">
+              <form class="form w-100">
+                <div class="form-group d-flex">
+                  <input type="text" class="form-control todo-list-input" placeholder="Add To-do">
+                  <button type="submit" class="add btn btn-primary todo-list-add-btn" id="add-task-todo">Add</button>
+                </div>
+              </form>
+            </div>
+            <div class="list-wrapper px-3">
+              <ul class="d-flex flex-column-reverse todo-list">
+                <li>
+                  <div class="form-check">
+                    <label class="form-check-label">
+                      <input class="checkbox" type="checkbox">
+                      Team review meeting at 3.00 PM
+                    </label>
+                  </div>
+                  <i class="remove fa fa-times-circle"></i>
+                </li>
+                <li>
+                  <div class="form-check">
+                    <label class="form-check-label">
+                      <input class="checkbox" type="checkbox">
+                      Prepare for presentation
+                    </label>
+                  </div>
+                  <i class="remove fa fa-times-circle"></i>
+                </li>
+                <li>
+                  <div class="form-check">
+                    <label class="form-check-label">
+                      <input class="checkbox" type="checkbox">
+                      Resolve all the low priority tickets due today
+                    </label>
+                  </div>
+                  <i class="remove fa fa-times-circle"></i>
+                </li>
+                <li class="completed">
+                  <div class="form-check">
+                    <label class="form-check-label">
+                      <input class="checkbox" type="checkbox" checked>
+                      Schedule meeting for next week
+                    </label>
+                  </div>
+                  <i class="remove fa fa-times-circle"></i>
+                </li>
+                <li class="completed">
+                  <div class="form-check">
+                    <label class="form-check-label">
+                      <input class="checkbox" type="checkbox" checked>
+                      Project review
+                    </label>
+                  </div>
+                  <i class="remove fa fa-times-circle"></i>
+                </li>
+              </ul>
+            </div>
+            <div class="events py-4 border-bottom px-3">
+              <div class="wrapper d-flex mb-2">
+                <i class="fa fa-times-circle text-primary mr-2"></i>
+                <span>Feb 11 2018</span>
+              </div>
+              <p class="mb-0 font-weight-thin text-gray">Creating component page</p>
+              <p class="text-gray mb-0">build a js based app</p>
+            </div>
+            <div class="events pt-4 px-3">
+              <div class="wrapper d-flex mb-2">
+                <i class="fa fa-times-circle text-primary mr-2"></i>
+                <span>Feb 7 2018</span>
+              </div>
+              <p class="mb-0 font-weight-thin text-gray">Meeting with Alisa</p>
+              <p class="text-gray mb-0 ">Call Sarah Graves</p>
+            </div>
+          </div>
+          <!-- To do section tab ends -->
+          <div class="tab-pane fade" id="chats-section" role="tabpanel" aria-labelledby="chats-section">
+            <div class="d-flex align-items-center justify-content-between border-bottom">
+              <p class="settings-heading border-top-0 mb-3 pl-3 pt-0 border-bottom-0 pb-0">Friends</p>
+              <small class="settings-heading border-top-0 mb-3 pt-0 border-bottom-0 pb-0 pr-3 font-weight-normal">See All</small>
+            </div>
+            <ul class="chat-list">
+              <li class="list active">
+                <div class="profile"><img src="../../images/faces/face1.jpg" alt="image"><span class="online"></span></div>
+                <div class="info">
+                  <p>Thomas Douglas</p>
+                  <p>Available</p>
+                </div>
+                <small class="text-muted my-auto">19 min</small>
+              </li>
+              <li class="list">
+                <div class="profile"><img src="../../images/faces/face2.jpg" alt="image"><span class="offline"></span></div>
+                <div class="info">
+                  <div class="wrapper d-flex">
+                    <p>Catherine</p>
+                  </div>
+                  <p>Away</p>
+                </div>
+                <div class="badge badge-success badge-pill my-auto mx-2">4</div>
+                <small class="text-muted my-auto">23 min</small>
+              </li>
+              <li class="list">
+                <div class="profile"><img src="../../images/faces/face3.jpg" alt="image"><span class="online"></span></div>
+                <div class="info">
+                  <p>Daniel Russell</p>
+                  <p>Available</p>
+                </div>
+                <small class="text-muted my-auto">14 min</small>
+              </li>
+              <li class="list">
+                <div class="profile"><img src="../../images/faces/face4.jpg" alt="image"><span class="offline"></span></div>
+                <div class="info">
+                  <p>James Richardson</p>
+                  <p>Away</p>
+                </div>
+                <small class="text-muted my-auto">2 min</small>
+              </li>
+              <li class="list">
+                <div class="profile"><img src="../../images/faces/face5.jpg" alt="image"><span class="online"></span></div>
+                <div class="info">
+                  <p>Madeline Kennedy</p>
+                  <p>Available</p>
+                </div>
+                <small class="text-muted my-auto">5 min</small>
+              </li>
+              <li class="list">
+                <div class="profile"><img src="../../images/faces/face6.jpg" alt="image"><span class="online"></span></div>
+                <div class="info">
+                  <p>Sarah Graves</p>
+                  <p>Available</p>
+                </div>
+                <small class="text-muted my-auto">47 min</small>
+              </li>
+            </ul>
+          </div>
+          <!-- chat tab ends -->
+        </div>
+      </div>
+      <!-- partial -->
+      <!-- partial:../../partials/_sidebar.html -->
+    <nav class="sidebar sidebar-offcanvas" id="sidebar">
+        <ul class="nav">
+          <li class="nav-item nav-profile">
+            <div class="nav-link">
+              <div class="profile-image">
+                <img src="../../images/faces/face5.jpg" alt="image"/>
+              </div>
+              <div class="profile-name">
+                <p class="name">
+                <?= htmlspecialchars($u["names"]) ?>
+                </p>
+                <p class="designation">
+                <?= htmlspecialchars($u["AccessType"]) ?>
+                </p>
+              </div>
+            </div>
+          </li>
+          
+         <!--Side Menu Start-->
+         <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#ui-advanced" aria-expanded="false" aria-controls="ui-advanced">
+              <i class="fas fa-clipboard-list menu-icon"></i>
+              <span class="menu-title">Sales</span>
+              <i class="menu-arrow"></i>
+            </a>
+            <div class="collapse" id="ui-advanced">
+              <ul class="nav flex-column sub-menu">
+                <li class="nav-item"> <a class="nav-link" href="Sales.php">New Sales</a></li>
+                 <!-- <li class="nav-item"> <a class="nav-link" href="../ui-features/clipboard.html">Clipboard</a></li>
+                <li class="nav-item"> <a class="nav-link" href="../ui-features/context-menu.html">Context menu</a></li>
+                <li class="nav-item"> <a class="nav-link" href="../ui-features/slider.html">Sliders</a></li>
+                <li class="nav-item"> <a class="nav-link" href="../ui-features/carousel.html">Carousel</a></li>
+                <li class="nav-item"> <a class="nav-link" href="../ui-features/colcade.html">Colcade</a></li>
+                <li class="nav-item"> <a class="nav-link" href="../ui-features/loaders.html">Loaders</a></li>-->
+              </ul>
+            </div>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#form-elements" aria-expanded="false" aria-controls="form-elements">
+              <i class="fab fa-wpforms menu-icon"></i>
+              <span class="menu-title">Clients</span>
+              <i class="menu-arrow"></i>
+            </a>
+            <div class="collapse" id="form-elements">
+              <ul class="nav flex-column sub-menu">
+                <li class="nav-item"><a class="nav-link" href="newClient.php">New Clients</a></li>                
+                <!--<li class="nav-item"><a class="nav-link" href="advanced_elements.html">Online Applications</a></li>-->
+                <li class="nav-item"><a class="nav-link" href="Client_profile.php">Client Profile</a></li>
+                <!--<li class="nav-item"><a class="nav-link" href="..">Reports</a></li>-->
+              </ul>
+            </div>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#editors" aria-expanded="false" aria-controls="editors">
+              <i class="fas fa-pen-square menu-icon"></i>
+              <span class="menu-title">Premuims</span>
+              <i class="menu-arrow"></i>
+            </a>
+            <div class="collapse" id="editors">
+              <ul class="nav flex-column sub-menu">
+                <li class="nav-item"><a class="nav-link" href="Premium.php">New Payments</a></li>
+                <li class="nav-item"><a class="nav-link" href="Claims.html">Funeral Claims</a></li>
+                <li class="nav-item"><a class="nav-link" href="AssetTable.php">Premuim Records</a></li>
+              </ul>
+            </div>
+          </li>
+          <!--<li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#charts" aria-expanded="false" aria-controls="charts">
+              <i class="fas fa-chart-pie menu-icon"></i>
+              <span class="menu-title">Reports</span>
+              <i class="menu-arrow"></i>
+            </a>
+            <div class="collapse" id="charts">
+              <ul class="nav flex-column sub-menu">
+                <li class="nav-item"> <a class="nav-link" href="../charts/chartjs.html">ChartJs</a></li>
+                <li class="nav-item"> <a class="nav-link" href="../charts/morris.html">Morris</a></li>
+                <li class="nav-item"> <a class="nav-link" href="../charts/flot-chart.html">Flot</a></li>
+                <li class="nav-item"> <a class="nav-link" href="../charts/google-charts.html">Google charts</a></li>
+                <li class="nav-item"> <a class="nav-link" href="../charts/sparkline.html">Sparkline js</a></li>
+                <li class="nav-item"> <a class="nav-link" href="../charts/c3.html">C3 charts</a></li>
+                <li class="nav-item"> <a class="nav-link" href="../charts/chartist.html">Chartists</a></li>
+                <li class="nav-item"> <a class="nav-link" href="../charts/justGage.html">JustGage</a></li>
+              </ul>
+              </div>
+          </li>-->
+          <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#tables" aria-expanded="false" aria-controls="tables">
+              <i class="fas fa-table menu-icon"></i>
+              <span class="menu-title">Finances</span>
+              <i class="menu-arrow"></i>
+            </a>
+            <div class="collapse" id="tables">
+              <ul class="nav flex-column sub-menu">
+                <li class="nav-item"> <a class="nav-link" href="Asset_Register.php">Asset Register and Disposal</a></li>
+                <li class="nav-item"> <a class="nav-link" href="AssetTable.php">Asset Records</a></li>
+                <li class="nav-item"> <a class="nav-link" href="Cash_Book.html">Cash Book</a></li>
+                 <li class="nav-item"> <a class="nav-link" href="AssetTable.php">Cash Book Records</a></li>
+               <!-- <li class="nav-item"> <a class="nav-link" href="../tables/sortable-table.html">Debtors Control</a></li>
+                <li class="nav-item"> <a class="nav-link" href="../tables/sortable-table.html">Income Statement</a></li>-->
+              </ul>
+            </div>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#icons" aria-expanded="false" aria-controls="icons">
+              <i class="fa fa-stop-circle menu-icon"></i>
+              <span class="menu-title">Human Resources</span>
+              <i class="menu-arrow"></i>
+            </a>
+            <div class="collapse" id="icons">
+              <ul class="nav flex-column sub-menu">
+                <li class="nav-item"> <a class="nav-link" href="Company_Staff.php">New Staff Member</a></li>
+                <li class="nav-item"> <a class="nav-link" href="../icons/font-awesome.html">Employee Profile</a></li>
+                <li class="nav-item"> <a class="nav-link" href="AssetTable.php">Staff Records</a></li>
+                <li class="nav-item"> <a class="nav-link" href="payrol_settings.php">Payroll Settings</a></li>
+                <li class="nav-item"> <a class="nav-link" href="../icons/themify.html">Payslips</a></li>
+              </ul>
+            </div>
+          </li>
+           <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#maps" aria-expanded="false" aria-controls="maps">
+              <i class="fas fa-map-marker-alt menu-icon"></i>
+              <span class="menu-title">Policies</span>
+              <i class="menu-arrow"></i>
+            </a>
+            <div class="collapse" id="maps">
+              <ul class="nav flex-column sub-menu">
+                <li class="nav-item"> <a class="nav-link" href="Products.php">Add Policies</a></li>
+                <li class="nav-item"> <a class="nav-link" href="Add_Categories.php">Add Categories</a></li>
+                <li class="nav-item"> <a class="nav-link" href="policyReport.php">Policy Reports</a></li>
+              </ul>
+            </div>
+          </li>
+           <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#Recordscharts" aria-expanded="false" aria-controls="charts">
+              <i class="fas fa-chart-pie menu-icon"></i>
+              <span class="menu-title">Records</span>
+              <i class="menu-arrow"></i>
+            </a>
+            <div class="collapse" id="Recordscharts">
+              <ul class="nav flex-column sub-menu">
+                <!--<li class="nav-item"> <a class="nav-link" href="../charts/chartjs.html">ChartJs</a></li>-->
+                <li class="nav-item"> <a class="nav-link" href="AssetTable.php">All Records</a></li>
+              </ul>
+              </div>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="New_Stock.php">
+              <i class="fas fa-minus-square menu-icon"></i>
+              <span class="menu-title">Physical Products</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="notification_portal.php">
+              <i class="fas fa-bell menu-icon"></i>
+              <span class="menu-title">Notifications Portal</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="phonebook.php">
+              <i class="fa fa-puzzle-piece menu-icon"></i>
+              <span class="menu-title">Phonebook</span>
+            </a>
+          </li>
+           <li class="nav-item">
+            <a class="nav-link" href="Document_Portal.php">
+              <i class="fas fa-minus-square menu-icon"></i>
+              <span class="menu-title">Documents</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#page-layouts" aria-expanded="false" aria-controls="page-layouts">
+              <i class="fab fa-trello menu-icon"></i>
+              <span class="menu-title">Admin</span>
+              <i class="menu-arrow"></i>
+            </a>
+            <div class="collapse" id="page-layouts">
+              <ul class="nav flex-column sub-menu">
+                <li class="nav-item d-none d-lg-block"> <a class="nav-link" href="branch.php">Branch Details</a></li>
+                <li class="nav-item"> <a class="nav-link" href="Payrol_admin.php">Payroll Administration</a></li>
+                <li class="nav-item "> <a class="nav-link" href="payrol_settings.php">Payroll Settings</a></li>
+              </ul>
+            </div>
+          </li>
+          <!--<li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#auth" aria-expanded="false" aria-controls="auth">
+              <i class="fas fa-window-restore menu-icon"></i>
+              <span class="menu-title">User Pages</span>
+              <i class="menu-arrow"></i>
+            </a>
+            <div class="collapse" id="auth">
+              <ul class="nav flex-column sub-menu">
+                <li class="nav-item"> <a class="nav-link" href="../samples/login.html"> Login </a></li>
+                <li class="nav-item"> <a class="nav-link" href="../samples/login-2.html"> Login 2 </a></li>
+                <li class="nav-item"> <a class="nav-link" href="../samples/register.html"> Register </a></li>
+                <li class="nav-item"> <a class="nav-link" href="../samples/register-2.html"> Register 2 </a></li>
+                <li class="nav-item"> <a class="nav-link" href="../samples/lock-screen.html"> Lockscreen </a></li>
+              </ul>
+            </div>
+          </li>-->
+        </ul>
+      </nav>
+      <!-- Side Menu Ends --> 
+      
+      <script>
+	$(document).ready(function(){
+	
+		function load_data(query)
+		{
+			$.ajax({
+			url:"fill.php",
+			method:"POST",
+			data:{query:query},
+			success:function(data)
+			{
+				$('#result').html(data);
+			}
+			});
+		}
+      
+      
+      
+      function load_data1(query1)
+		{
+			$.ajax({
+			url:"fill.php",
+			method:"POST",
+			data:{query1:query1},
+			success:function(data)
+			{
+				$('#result1').html(data);
+			}
+			});
+		}
+      
+      
+      function load_data2(query2)
+		{
+			$.ajax({
+			url:"fill.php",
+			method:"POST",
+			data:{query2:query2},
+			success:function(data)
+			{
+				$('#result2').html(data);
+			}
+			});
+		}
+      
+      
+      
+      function load_data3(query3)
+		{
+			$.ajax({
+			url:"fill.php",
+			method:"POST",
+			data:{query3:query3},
+			success:function(data)
+			{
+				$('#result3').html(data);
+			}
+			});
+		}
+      
+      
+      function load_data4(query4)
+		{
+			$.ajax({
+			url:"fill.php",
+			method:"POST",
+			data:{query4:query4},
+			success:function(data)
+			{
+				$('#result4').html(data);
+			}
+			});
+		}
+      
+      
+      
+      function load_data5(query5)
+		{
+			$.ajax({
+			url:"fill.php",
+			method:"POST",
+			data:{query5:query5},
+			success:function(data)
+			{
+				$('result5').html(data);
+			}
+			});
+		}
+      
+      
+      function load_data6(query6)
+		{
+			$.ajax({
+			url:"fill.php",
+			method:"POST",
+			data:{query6:query6},
+			success:function(data)
+			{
+				$('#result6').html(data);
+			}
+			});
+		}
+      
+      
+      
+      
+      
+      
+		$('#PolicyNumber').keyup(function(){
+		var search = $(this).val();
+		if(search != '')
+		{
+		load_data(search);
+      load_data1(search);
+      load_data2(search);
+      load_data3(search);
+      load_data4(search);
+      load_data5(search);
+      load_data6(search);
+		}
+		else
+		{
+			load_data();
+		}
+		});
+	});
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        $(document).ready(function(){
+		
+		function load_data_id(query)
+		{
+			$.ajax({
+			url:"fill_id.php",
+			method:"POST",
+			data:{query:query},
+			success:function(data)
+			{
+				$('#result').html(data);
+			}
+			});
+		}
+      
+      
+      
+      function load_data_id1(query1)
+		{
+			$.ajax({
+			url:"fill_id.php",
+			method:"POST",
+			data:{query1:query1},
+			success:function(data)
+			{
+				$('#result1').html(data);
+			}
+			});
+		}
+      
+      
+      function load_data_id2(query2)
+		{
+			$.ajax({
+			url:"fill_id.php",
+			method:"POST",
+			data:{query2:query2},
+			success:function(data)
+			{
+				$('#result2').html(data);
+			}
+			});
+		}
+      
+      
+      
+      function load_data_id3(query3)
+		{
+			$.ajax({
+			url:"fill_id.php",
+			method:"POST",
+			data:{query3:query3},
+			success:function(data)
+			{
+				$('#result3a').html(data);
+			}
+			});
+		}
+      
+      
+      function load_data_id4(query4)
+		{
+			$.ajax({
+			url:"fill_id.php",
+			method:"POST",
+			data:{query4:query4},
+			success:function(data)
+			{
+				$('#result4').html(data);
+			}
+			});
+		}
+      
+      
+      
+      function load_data_id5(query5)
+		{
+			$.ajax({
+			url:"fill_id.php",
+			method:"POST",
+			data:{query5:query5},
+			success:function(data)
+			{
+				$('result5').html(data);
+			}
+			});
+		}
+      
+      
+      function load_data_id6(query6)
+		{
+			$.ajax({
+			url:"fill_id.php",
+			method:"POST",
+			data:{query6:query6},
+			success:function(data)
+			{
+				$('#result6').html(data);
+			}
+			});
+		}
+
+        
+        
+        
+		$('#identity').keyup(function(){
+		var search = $(this).val();
+        
+		if(search != '')
+		{
+		load_data_id(search);
+      load_data_id1(search);
+      load_data_id2(search);
+      load_data_id3(search);
+      load_data_id4(search);
+      load_data_id5(search);
+      load_data_id6(search);
+		}
+		else
+		{
+			load_data_id();
+		}
+		});
+	});
+        
+        
+        
+        
+        
+         
+			$.ajax({
+			url:"total.php",
+			method:"POST",
+			
+			success:function(data)
+			{
+				$('#num').html(data);
+			}
+			});
+		
+
+        
+         
+			$.ajax({
+			url:"sms.php",
+			method:"POST",
+			
+			success:function(data)
+			{
+				$('#nosms').html(data);
+			}
+			});
+		
+        
+                 
+	
+      </script>
+      <!-- partial -->
+      <div class="main-panel">        
+        <div class="content-wrapper">
+          <div class="page-header">
+            <h3 class="page-title">
+                Premiums
+            </h3>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                </ol>
+            </nav>
+          </div>
+            <div class="col-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  
+                  <p class="card-description">
+                   Fill In The Details Below
+                  </p>
+                  
+                  <form class="forms-sample" id="PolicyInfo" method="POST" action="Premuim.php" >
+                    <div class="form-group">
+                     
+                       <div class="form-group">
+                         <label for="month">Month</label>
+                         
+                        <select class="form-control" id="month" name="month" >
+                          
+                           <option>January</option>
+                           <option>February</option>
+                           <option>March</option>
+                           <option>April</option>
+                           <option>May</option>
+                           <option>July</option>
+                           <option>August</option>
+                           <option>September</option>
+                           <option>October</option>
+                           <option>November</option>
+                          <option> December</option>
+                        </select>
+                         <div id='result' style='background-color:lightgray; width:40%; '></div>
+                      </div>
+                    <div class="form-group">
+                      <label for="year">Year</label>
+                        <select class="form-control" id="year" name="year" required>
+                          
+                         <option>1999</option>
+                           <option>2000</option>
+                           <option>2001</option>
+                           <option>2002</option>
+                           <option>2003</option>
+                           <option>2004</option>
+                           <option>2005</option>
+                           <option>2006</option>
+                           <option>2007</option>
+                           <option>2008</option>
+                          <option> 2009</option>
+                          <option>2010</option>
+                           <option>2011</option>
+                           <option>2012</option>
+                           <option>2013</option>
+                           <option>2014</option>
+                           <option>2015</option>
+                           <option>2016</option>
+                           <option>2017</option>
+                           <option>2018</option>
+                           <option>2019</option>
+                          <option> 2020</option>
+                           <option>2021</option>
+                           <option>2022</option>
+                           <option>2023</option>
+                        </select>
+                      <div id='result1' style='background-color:lightgray; width:40%; '></div>
+                      </div>
+                      
+                    </div>
+                    
+                     <div class="form-group">
+                      <label for="product">Policy number </label>
+                       <select class="form-control" id="product" name="product" >
+                       <?php 
+                               foreach ($result1 as $rows) { 
+                              ?>
+                                  <option><?php echo $rows['Policy'] ?></option>
+                              <?php
+                                }
+                              ?>
+                        </select>
+                     
+                    </div>
+                    
+                    
+                    <div class="form-group">
+                      <label for="PolicyNumber">Policy Number</label>
+                      <input type="text" class="form-control" id="PolicyNumber"  name="PolicyNumber" placeholder="AMA123" >
+                      
+                      <div id='result3a' style='background-color:lightgray; width:40%; '></div>
+                    </div>
+                    
+                    <div class="form-group">
+                      <label for="Name">Name and Surname</label>
+                      <input type="text" class="form-control" id="Name_and_Surname" name="Name_and_Surname"  placeholder="Jeremiah Zulu" >
+                      <div id='result2' style='background-color:lightgray; width:40%; '></div>
+                    </div>
+                    
+                    <div class="form-group">
+                      <label for="ID/Passport">SA ID/Passport</label>
+                      <input type="text" class="form-control" id="identity" name="ID" placeholder="9608135432089" >
+                      <div id='result3' style='background-color:lightgray; width:40%; '></div>
+                    </div>
+                    
+                    <div class="form-group">
+                      <label for="Policy_Plan">Policy Plan</label>
+                      <input type="text" class="form-control" id="Policy_Plan" name="Policy_Plan" placeholder="Gold" >
+                      <div id='result4' style='background-color:lightgray; width:40%; '></div>
+                    </div>
+                    
+                     <div class="form-group">
+                      <label for="Policy_Plan">Monthly Premium</label>
+                      <input type="text" class="form-control" id="monthly_premium" name="monthly_premium" placeholder="275" >
+                       <div id='result5' style='background-color:lightgray; width:40%; '></div>
+                    </div>
+                    
+                    <div class="form-group">
+                      <label for="date">Payment Date</label>
+						<input type="date" class="form-control" id="pr_date" name="pr_date" >
+                      <div id='result6' style='background-color:lightgray; width:40%; '></div>
+                      <br> <br>
+                           	<script>
+		function submitForm() {
+			var form = document.getElementById("PolicyInfo");
+			var formData = new FormData(form);
+
+			// Send data to first PHP file
+			var xhr1 = new XMLHttpRequest();
+			xhr1.open("POST", "Premuim.php");
+			xhr1.send(formData);
+
+			// Send data to second PHP file
+			var xhr2 = new XMLHttpRequest();
+			xhr2.open("POST", "premiumInvoice.php");
+			xhr2.send(formData);
+		}
+	</script>
+                    <button type="submit" class="btn btn-primary" onclick="submitForm()" value="Submit">Submit</button>
+                     <button type="reset"  class="btn btn-light" value="Clear">Clear all</button>
+ 					<a href='Premuimview.php' ><button  type='button' class="btn btn-light" value="Records">View Records</button></a>
+                    </div>
+                    
+                  </form>
+             
+                </div>
+              </div>
+            </div>
+             <div class="row grid-margin">
+            <div class="col-12">
+              <div class="card card-statistics">
+                <div class="card-body">
+                  <div class="d-flex flex-column flex-md-row align-items-center justify-content-between">
+                      <div class="statistics-item">
+                        <p>
+                          <i class="icon-sm fa fa-user mr-2"></i>
+                          Total Clients
+                        </p>
+                        <h2 id='num'></h2>
+                        <label class="badge badge-outline-success badge-pill">100% Clients</label>
+                      </div>
+                      <div class="statistics-item">
+                        <p>
+                          <i class="icon-sm fas fa-hourglass-half mr-2"></i>
+                          Not Paid
+                        </p>
+                        <h2>1050</h2>
+                        <label class="badge badge-outline-danger badge-pill">70% of Clients</label>
+                      </div>
+                  <div class="statistics-item">
+                        <p>
+                          <i class="icon-sm fas fa-check-circle mr-2"></i>
+                         Paid
+                        </p>
+                        <h2>300</h2>
+                        <label class="badge badge-outline-success badge-pill">30% of Clients</label>
+                      </div>
+                      <div class="statistics-item">
+                        <p>
+                          <i class="icon-sm fas fa-circle-notch mr-2"></i>
+                          Smses
+                        </p>
+                        <h2 id='nosms'></h2>
+                        <label class="badge badge-outline-success badge-pill">Top Up</label>
+                      </div>  
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          
+         
+              </div>
+            </div>
+              </div>
+            </div>
+  <script>
+  
+  	$.ajax({
+			url:"session.php",
+			method:"POST",
+			
+			success:function(data)
+			{
+				$('#session').html(data);
+			}
+			});
+        
+  
+</script>
+         
+        <!-- content-wrapper ends -->
+        <!-- partial:../../partials/_footer.html -->
+        <footer class="footer">
+          <div class="d-sm-flex justify-content-center justify-content-sm-between">
+            <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Copyright © 2023 <a href="https://www.eKhonnector.co.za/" target="_blank">eKhonnector</a>. All rights reserved.</span>
+           
+          </div>
+        </footer>
+        <!-- partial -->
+      
+  <!-- container-scroller -->
+  <!-- plugins:js -->
+  <script src="../../vendors/js/vendor.bundle.base.js"></script>
+  <script src="../../vendors/js/vendor.bundle.addons.js"></script>
+  <!-- endinject -->
+  <!-- inject:js -->
+  <script src="../../js/off-canvas.js"></script>
+  <script src="../../js/hoverable-collapse.js"></script>
+  <script src="../../js/misc.js"></script>
+  <script src="../../js/settings.js"></script>
+  <script src="../../js/todolist.js"></script>
+  <!-- endinject -->
+  <!-- Custom js for this page-->
+  <script src="../../js/file-upload.js"></script>
+  <script src="../../js/typeahead.js"></script>
+  <script src="../../js/select2.js"></script>
+  <!-- End custom js for this page-->
+</body>
+
+<script>
+
+
+</script>
+</html>
+
